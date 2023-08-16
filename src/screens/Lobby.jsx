@@ -33,27 +33,69 @@ const LobbyScreen = () => {
   }, [socket, handleJoinRoom]);
 
   return (
-    <div>
-      <h1>Lobby</h1>
-      <form onSubmit={handleSubmitForm}>
-        <label htmlFor="email">Email ID</label>
+    <div className=" min-h-screen flex flex-col justify-between w-screen ">
+      {/* //header code  */}
+      <div className="flex justify-between border bg-gray-900 p-5 px-10 items-center w-full">
+
+        <div className="flex items-center space-x-4">
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/174/174857.png"
+            alt="logo"
+            className="w-10"
+          />
+          <h1 className="text-3xl text-white">Video Chat</h1>
+        </div>
+        <div className="flex items-center space-x-4">
+          <a
+            href="portfolio.satyamsingh.me"
+            className="text-white text-xl hover:text-gray-200 transition duration-300"
+          >
+            About Me
+          </a>
+          <a
+            href="portfolio.satyamsingh.me/contact"
+            className="text-white text-xl hover:text-gray-200 transition duration-300"
+          >
+            Contact Me
+          </a>
+        </div>
+      </div>
+
+
+
+      <form onSubmit={handleSubmitForm} className=" gap-5 flex bg-gray-600 self-center mx-auto w-[50%] flex-col border p-10 items-center justify-center ">
+        <h1 className="text-4xl font-bold text-black mb-4">Lobby</h1>
+        <label htmlFor="email" className="text-white">
+          Name
+        </label>
         <input
-          type="email"
+          type="name"
           id="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          placeholder="Enter your name"
+          className="bg-gray-800 text-white p-2 rounded"
         />
-        <br />
-        <label htmlFor="room">Room Number</label>
+        <label htmlFor="room" className="text-white">
+          Room Number
+        </label>
         <input
           type="text"
           id="room"
           value={room}
           onChange={(e) => setRoom(e.target.value)}
+          placeholder="Enter the room number"
+          className="bg-gray-800 text-white p-2 rounded"
         />
-        <br />
-        <button>Join</button>
+        <button className="bg-blue-500 mt-10 text-white py-2 px-4 rounded">
+          Join
+        </button>
       </form>
+      <div className="flex justify-center items-center bg-gray-900 p-5">
+        <p className="text-white">Made with ❤️ websocket ❤️ by <a href="#" className="text-blue-500 hover:text-blue-600 transition duration-300">Satyam</a></p>
+      </div>
+
+
     </div>
   );
 };

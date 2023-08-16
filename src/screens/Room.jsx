@@ -8,6 +8,10 @@ const RoomPage = () => {
   const [remoteSocketId, setRemoteSocketId] = useState(null);
   const [myStream, setMyStream] = useState();
   const [remoteStream, setRemoteStream] = useState();
+  // condition when user is connecting to room
+  const [isConnected, setIsConnected] = useState(false);
+  // condition when stream is sent
+  const [isStreamSent, setIsStreamSent] = useState(false);
 
   const handleUserJoined = useCallback(({ email, id }) => {
     console.log(`Email ${email} joined room`);
@@ -22,6 +26,8 @@ const RoomPage = () => {
     const offer = await peer.getOffer();
     socket.emit("user:call", { to: remoteSocketId, offer });
     setMyStream(stream);
+    setIsConnected(true);
+
   }, [remoteSocketId, socket]);
 
   const handleIncommingCall = useCallback(
@@ -43,6 +49,7 @@ const RoomPage = () => {
     for (const track of myStream.getTracks()) {
       peer.peer.addTrack(track, myStream);
     }
+    setIsStreamSent(true);
   }, [myStream]);
 
   const handleCallAccepted = useCallback(
@@ -110,35 +117,66 @@ const RoomPage = () => {
   ]);
 
   return (
-    <div>
-      <h1>Room Page</h1>
-      <h4>{remoteSocketId ? "Connected" : "No one in room"}</h4>
-      {myStream && <button onClick={sendStreams}>Send Stream</button>}
-      {remoteSocketId && <button onClick={handleCallUser}>CALL</button>}
-      {myStream && (
-        <>
-          <h1>My Stream</h1>
-          <ReactPlayer
-            playing
-            muted
-            height="100px"
-            width="200px"
-            url={myStream}
-          />
-        </>
-      )}
-      {remoteStream && (
-        <>
-          <h1>Remote Stream</h1>
-          <ReactPlayer
-            playing
-            muted
-            height="100px"
-            width="200px"
-            url={remoteStream}
-          />
-        </>
-      )}
+    <div className="  bg-gray-900 overflow-hidden min-h-screen max-w-screen flex flex-col items-center justify-center">
+      <div className="fixed z-1 left-5 top-5 bg-gray-950 p-5 px-10">
+
+        <h1 className="text-2xl font-bold text-white">By: Satyam Singh </h1>
+        <a href="https://portfolio.satyamsingh.me" className="text-blue-500 text-xl">click here</a>
+        <h1 className="text-sm text-gray-300">to know more about me  </h1>
+        {/* <h1 className="text-2xl font-bold text-white">  </h1> */}
+      </div>
+      <div className=" bg-gray-800  py-5 px-32 mt-5 rounded rounded-2xl flex flex-col items-center justify-around gap-10">
+
+        <h1 className="text-6xl font-bold text-white">Room </h1>
+        <h4 className="text-white bg-gray-800 p-5 px-10">
+          {!isConnected && !remoteSocketId ? "No incoming call" : (remoteSocketId && !isConnected ? "You have an incoming call" : "")}
+        </h4>
+        {remoteSocketId && (
+          <button
+            className="bg-blue-500 hover:bg-blue-400 text-white py-2 px-4 rounded"
+            onClick={handleCallUser}
+          >
+            {isConnected ? "Connected" : "Connect Call"}
+          </button>
+        )}
+      </div>
+
+      <div className="bg-gray-800 mb-10 flex flex-wrap p-10 mt-10 w-[80%] rounded items-center justify-between">
+
+        {myStream && (
+          <div className="video-container">
+            <h1 className="text-white">My Stream</h1>
+            <ReactPlayer
+              playing
+              muted
+              height="300px"
+              width="auto"
+              url={myStream}
+            />
+          </div>
+        )}
+        {myStream && (
+
+          <button
+            className="bg-blue-500 text-white py-2 px-4 rounded"
+            onClick={sendStreams}
+          >
+            {isStreamSent ? "You are Live Now" : "Send Your Video"}
+          </button>
+        )}
+        {remoteStream && (
+          <div className="video-container">
+            <h1 className="text-white">Remote Stream</h1>
+            <ReactPlayer
+              playing
+              muted
+              height="300px"
+              width="auto"
+              url={remoteStream}
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 };
