@@ -47,13 +47,13 @@ const LobbyScreen = () => {
         </div>
         <div className="flex items-center space-x-4">
           <a
-            href="portfolio.satyamsingh.me"
+            href="https://portfolio.satyamsingh.me/about"
             className="text-white text-xl hover:text-gray-200 transition duration-300"
           >
             About Me
           </a>
           <a
-            href="portfolio.satyamsingh.me/contact"
+            href="https://portfolio.satyamsingh.me/contact"
             className="text-white text-xl hover:text-gray-200 transition duration-300"
           >
             Contact Me
