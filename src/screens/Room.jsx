@@ -2,16 +2,21 @@ import React, { useEffect, useCallback, useState } from "react";
 import ReactPlayer from "react-player";
 import peer from "../service/peer";
 import { useSocket } from "../context/SocketProvider";
+import { GoUnmute } from 'react-icons/go';
+import { GoMute } from 'react-icons/go';
+import { BsFillMicFill } from 'react-icons/bs';
+import { BsFillMicMuteFill } from 'react-icons/bs';
+
 
 const RoomPage = () => {
   const socket = useSocket();
   const [remoteSocketId, setRemoteSocketId] = useState(null);
   const [myStream, setMyStream] = useState();
   const [remoteStream, setRemoteStream] = useState();
-  // condition when user is connecting to room
   const [isConnected, setIsConnected] = useState(false);
-  // condition when stream is sent
   const [isStreamSent, setIsStreamSent] = useState(false);
+  const [isLocalMuted, setIsLocalMuted] = useState(false);
+  const [isRemoteMuted, setIsRemoteMuted] = useState(false);
 
   const handleUserJoined = useCallback(({ email, id }) => {
     console.log(`Email ${email} joined room`);
@@ -116,20 +121,34 @@ const RoomPage = () => {
     handleNegoNeedFinal,
   ]);
 
+  const toggleLocalAudio = () => {
+    // Toggle the local audio track's enabled property to mute/unmute audio
+    myStream.getAudioTracks()[0].enabled = !isLocalMuted;
+    setIsLocalMuted(!isLocalMuted);
+  };
+
+  const toggleRemoteAudio = () => {
+    // Toggle the remote audio playback by muting/unmuting ReactPlayer audio
+    setIsRemoteMuted(!isRemoteMuted);
+  };
+
   return (
-    <div className="  bg-gray-900 overflow-hidden min-h-screen max-w-screen flex flex-col items-center justify-center">
+    <div className="bg-gray-900 overflow-hidden min-h-screen max-w-screen flex flex-col items-center justify-center">
       <div className="fixed z-1 left-5 top-5 bg-gray-950 p-5 px-10">
-
-        <h1 className="text-2xl font-bold text-white">By: Satyam Singh </h1>
-        <a href="https://portfolio.satyamsingh.me" className="text-blue-500 text-xl">click here</a>
-        <h1 className="text-sm text-gray-300">to know more about me  </h1>
-        {/* <h1 className="text-2xl font-bold text-white">  </h1> */}
+        <h1 className="text-2xl font-bold text-white">By: Satyam Singh</h1>
+        <a href="https://portfolio.satyamsingh.me" className="text-blue-500 text-xl">
+          click here
+        </a>
+        <h1 className="text-sm text-gray-300">to know more about me</h1>
       </div>
-      <div className=" bg-gray-800  py-5 px-32 mt-5 rounded rounded-2xl flex flex-col items-center justify-around gap-10">
-
-        <h1 className="text-6xl font-bold text-white">Room </h1>
+      <div className="bg-gray-800 py-5 px-32 mt-5 rounded rounded-2xl flex flex-col items-center justify-around gap-10">
+        <h1 className="text-6xl font-bold text-white">Room</h1>
         <h4 className="text-white bg-gray-800 p-5 px-10">
-          {!isConnected && !remoteSocketId ? "No incoming call" : (remoteSocketId && !isConnected ? "You have an incoming call" : "")}
+          {!isConnected && !remoteSocketId
+            ? "No incoming call"
+            : remoteSocketId && !isConnected
+              ? "You have an incoming call"
+              : ""}
         </h4>
         {remoteSocketId && (
           <button
@@ -139,10 +158,26 @@ const RoomPage = () => {
             {isConnected ? "Connected" : "Connect Call"}
           </button>
         )}
+        {myStream && (
+          <div className="flex items-center">
+            <button
+              className={`${isLocalMuted ? "bg-red-500" : "bg-green-500"
+                } hover:bg-green-400 text-white py-2 px-4 rounded mr-4`}
+              onClick={toggleLocalAudio}
+            >
+              {isLocalMuted ? <GoMute /> : <GoUnmute />}
+            </button>
+            <button
+              className={`${isRemoteMuted ? "bg-red-500" : "bg-green-500"
+                } hover:bg-green-400 text-white py-2 px-4 rounded`}
+              onClick={toggleRemoteAudio}
+            >
+              {isRemoteMuted ? <BsFillMicMuteFill /> : <BsFillMicFill />}
+            </button>
+          </div>
+        )}
       </div>
-
       <div className="bg-gray-800 mb-10 flex flex-wrap p-10 mt-10 w-[80%] rounded items-center justify-between">
-
         {myStream && (
           <div className="video-container">
             <h1 className="text-white">My Stream</h1>
@@ -151,12 +186,11 @@ const RoomPage = () => {
               muted
               height="300px"
               width="auto"
-              url={myStream}
+              url={myStream} // Add the correct audio URL here
             />
           </div>
         )}
         {myStream && (
-
           <button
             className="bg-blue-500 text-white py-2 px-4 rounded"
             onClick={sendStreams}
@@ -169,10 +203,10 @@ const RoomPage = () => {
             <h1 className="text-white">Remote Stream</h1>
             <ReactPlayer
               playing
-              muted
+              muted={isRemoteMuted}
               height="300px"
               width="auto"
-              url={remoteStream}
+              url={remoteStream} // Add the correct audio URL here
             />
           </div>
         )}
